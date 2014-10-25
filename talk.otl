@@ -1,0 +1,58 @@
+CougarCS meeting 2014-10-23
+
+R-extensions and embedding R in Perl
+
+====
+
+R's C API is documented at <http://cran.r-project.org/doc/manuals/r-release/R-exts.html>
+
+Top of your C file
+	; #include <R.h>
+	; #include <Rinternals.h>
+
+SEXP
+	s-expressions
+		like in Lisp
+			: (cdr (cdr (cdr '(A B C D))))
+			> (D)
+		R's design inspired by Scheme
+	hold all variable types
+		http://cran.r-project.org/doc/manuals/r-release/R-exts.html#Details-of-R-types
+		: SEXPTYPE	R equivalent
+		:===================================================
+		: REALSXP	numeric with storage mode double
+		: INTSXP	integer
+		: CPLXSXP	complex
+		: LGLSXP	logical
+		: STRSXP	character
+		: VECSXP	list (generic vector)
+		: LISTSXP	pairlist
+		: DOTSXP	a ‘…’ object
+		: NILSXP	NULL
+		: SYMSXP	name/symbol
+		: CLOSXP	function or function closure
+		: ENVSXP	environment
+	refer to variables as SEXP
+		: SEXP convolve2(SEXP a, SEXP b) {
+		:    /* ... */
+		: }
+		; ft=c
+	you can find out the type of a SEXP variable
+		: SEXP a;
+		:
+		: switch( TYPEOF(a) ) {
+		:     case REALSEXP:
+		:         /* double */
+		:     case INTSEXP:
+		:         /* integer */
+		:     case STRSEXP:
+		:         /* strings */
+		: }
+	Two ways of calling
+		.C("c_fn", arg1, arg2, arg3)
+		.External("ext_fn", arg1, arg2, arg3)
+		difference
+			.C passes in each SEXP argument separately
+			.External passes in all the arguments as a single SEXP variable
+				a list of all the arguments
+
